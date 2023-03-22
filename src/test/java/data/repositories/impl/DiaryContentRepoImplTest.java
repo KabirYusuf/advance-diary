@@ -1,7 +1,10 @@
 package data.repositories.impl;
+import data.dto.request.UpdateContentRequest;
 import data.models.DiaryContent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -54,7 +57,33 @@ class DiaryContentRepoImplTest {
     void testThatAllContentsWithSameDateAreReturnedWhenContentsAreSearchedForById(){
         diaryContentRepoImpl.saveDiaryContent(diaryContent);
         diaryContentRepoImpl.saveDiaryContent(diaryContent);
-        int noOfContentsWhenISearchByDate = diaryContentRepoImpl.viewDiaryContentByDate("2023-03-22").size();
+        int noOfContentsWhenISearchByDate = diaryContentRepoImpl.viewDiaryContentByDate(LocalDate.now().toString()).size();
         assertEquals(2, noOfContentsWhenISearchByDate);
+    }
+    @Test
+    void testThatIfADiaryContentCanBeUpdated(){
+        diaryContentRepoImpl.saveDiaryContent(diaryContent);
+        String titleOfSavedContentBeforeUpdate = "First content";
+        String bodyOfContentBeforeUpdate = "My first diary content";
+        assertEquals(bodyOfContentBeforeUpdate, diaryContentRepoImpl.viewDiaryContentById(1).getBody());
+        assertEquals(titleOfSavedContentBeforeUpdate, diaryContentRepoImpl.viewDiaryContentById(1).getTitle());
+        String titleUpdate = "updated title";
+        String bodyUpdate = "updatedBody";
+        UpdateContentRequest updateContentRequest = new UpdateContentRequest();
+        updateContentRequest.setBody(bodyUpdate);
+        updateContentRequest.setId(1);
+        updateContentRequest.setTitle(titleUpdate);
+        diaryContentRepoImpl.updateDiaryContent(updateContentRequest);
+        String titleOfSavedContentAfterUpdate = "updated title";
+        String bodyOfContentAfterUpdate = "updatedBody";
+        assertEquals(titleOfSavedContentAfterUpdate,diaryContentRepoImpl.viewDiaryContentById(1).getTitle() );
+        assertEquals(bodyOfContentAfterUpdate, diaryContentRepoImpl.viewDiaryContentById(1).getBody());
+    }
+    @Test
+    void testThatAllDiaryContentsHavingTitleUsedToSearchAreReturned(){
+        diaryContentRepoImpl.saveDiaryContent(diaryContent);
+        diaryContentRepoImpl.saveDiaryContent(diaryContent);
+        int noOfContentsWhenISearchByTitle = diaryContentRepoImpl.viewDiaryContentByTitle("First content").size();
+        assertEquals(2, noOfContentsWhenISearchByTitle);
     }
 }
