@@ -3,4 +3,4 @@
 *.iml
 *.ipr
 *.env
-*.txt
+resources/*.txt
