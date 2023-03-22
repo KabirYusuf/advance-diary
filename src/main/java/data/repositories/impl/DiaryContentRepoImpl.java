@@ -5,33 +5,38 @@ import data.dto.response.CreateDiaryContentResponse;
 import data.models.DiaryContent;
 import data.repositories.DiaryContentRepo;
 
+import javax.swing.text.DateFormatter;
+import java.io.*;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Formatter;
 import java.util.List;
 
 public class DiaryContentRepoImpl implements DiaryContentRepo {
-    private List<DiaryContent>diaryContents = new ArrayList<>();
+    private final List<DiaryContent>diaryContents = new ArrayList<>();
     @Override
-    public CreateDiaryContentResponse createDiaryContent(CreateDiaryContentRequest createDiaryContentRequest) {
-        DiaryContent diaryContent = new DiaryContent();
-        long id = diarySize() + 1;
-        diaryContent.setBody(createDiaryContentRequest.getBody());
-        diaryContent.setTitle(createDiaryContentRequest.getTitle());
+    public DiaryContent saveDiaryContent(DiaryContent diaryContent) {
+        int id = diarySize() + 1;
         diaryContent.setId(id);
+        diaryContent.setLocalDateTime(LocalDateTime.now());
         diaryContents.add(diaryContent);
-        CreateDiaryContentResponse createDiaryContentResponse = new CreateDiaryContentResponse();
-        createDiaryContentResponse.setId(id);
-        createDiaryContentResponse.setMessage("Created successfully");
-        return createDiaryContentResponse;
+        return diaryContent;
     }
 
     @Override
-    public void deleteDiaryContentById(long id) {
-
+    public void deleteDiaryContentById(int id) {
+        diaryContents.remove(id - 1);
     }
 
     @Override
     public List<DiaryContent> viewAllDiaryContent() {
-        return null;
+        return diaryContents;
     }
 
     @Override
@@ -40,8 +45,13 @@ public class DiaryContentRepoImpl implements DiaryContentRepo {
     }
 
     @Override
-    public DiaryContent viewDiaryContentByDate(String date) {
-        return null;
+    public List<DiaryContent> viewDiaryContentByDate(String date) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate actualDate = LocalDate.parse(date, formatter);
+        return diaryContents.
+                stream().
+                filter(diaryContent -> diaryContent.getLocalDateTime().toLocalDate().equals(actualDate)).
+                toList();
     }
 
     @Override

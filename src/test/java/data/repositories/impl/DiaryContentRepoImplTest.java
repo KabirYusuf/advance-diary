@@ -1,37 +1,60 @@
 package data.repositories.impl;
-
-import data.dto.request.CreateDiaryContentRequest;
-import data.dto.response.CreateDiaryContentResponse;
+import data.models.DiaryContent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class DiaryContentRepoImplTest {
-    private DiaryContentRepoImpl diaryContentRepoImpl = new DiaryContentRepoImpl();
-    private CreateDiaryContentRequest createDiaryContentRequest = new CreateDiaryContentRequest();
+    private DiaryContentRepoImpl diaryContentRepoImpl;
+    private DiaryContent diaryContent;
 
     @BeforeEach
     void setUp() {
-        createDiaryContentRequest.setTitle("First Content");
-        createDiaryContentRequest.setBody("My first diary content");
+        diaryContentRepoImpl = new DiaryContentRepoImpl();
+        diaryContent = new DiaryContent();
+        diaryContent.setTitle("First content");
+        diaryContent.setBody("My first diary content");
     }
     @Test
     void testThatIfADiaryContentIsSaved_DiaryContentDBSizeIncreasesByOne(){
         var diaryDBSizeBeforeSavingContent = diaryContentRepoImpl.diarySize();
         assertEquals(0,diaryDBSizeBeforeSavingContent);
-        diaryContentRepoImpl.createDiaryContent(createDiaryContentRequest);
+        diaryContentRepoImpl.saveDiaryContent(diaryContent);
         var diaryDBSizeAfterSavingContent = diaryContentRepoImpl.diarySize();
         assertEquals(1,diaryDBSizeAfterSavingContent);
     }
     @Test
     void testThatIdOfDiaryContentIsGeneratedAutomaticallyWhenContentIsSaved(){
-        CreateDiaryContentResponse createDiaryContentResponse = diaryContentRepoImpl.createDiaryContent(createDiaryContentRequest);
-        assertEquals(1, createDiaryContentResponse.getId());
+        DiaryContent saveDiaryContent = diaryContentRepoImpl.saveDiaryContent(diaryContent);
+        assertEquals(1, saveDiaryContent.getId());
     }
     @Test
-    void testThatSuccessMessageIsReturnedWhenDiaryContentIsAddedSuccessfully(){
-        CreateDiaryContentResponse createDiaryContentResponse = diaryContentRepoImpl.createDiaryContent(createDiaryContentRequest);
-        assertEquals("Created successfully", createDiaryContentResponse.getMessage());
+    void testThatDiaryContentDBSizeReducesByOneWhenADiaryContentIsDeletedById(){
+        diaryContentRepoImpl.saveDiaryContent(diaryContent);
+        diaryContentRepoImpl.saveDiaryContent(diaryContent);
+        int dBSizeBeforeDeletingAContent = diaryContentRepoImpl.diarySize();
+        assertEquals(2,dBSizeBeforeDeletingAContent);
+        diaryContentRepoImpl.deleteDiaryContentById(1);
+        int dBSizeAfterDeletingAContent = diaryContentRepoImpl.diarySize();
+        assertEquals(1, dBSizeAfterDeletingAContent);
+    }
+    @Test
+    void testThatTheNumberOfContentsInDBIsReturnedWhenAllContentsAreViewed(){
+        var sizeOfContentsReturnedBeforeAddingContents = diaryContentRepoImpl.viewAllDiaryContent();
+        assertEquals(0,sizeOfContentsReturnedBeforeAddingContents.size());
+        diaryContentRepoImpl.saveDiaryContent(diaryContent);
+        var sizeOfContentsReturnedAfterAddingAContent = diaryContentRepoImpl.viewAllDiaryContent();
+        assertEquals(1,sizeOfContentsReturnedAfterAddingAContent.size());
+        diaryContentRepoImpl.saveDiaryContent(diaryContent);
+        var sizeOfContentsReturnedAfterAddingTwoContent = diaryContentRepoImpl.viewAllDiaryContent();
+        assertEquals(2,sizeOfContentsReturnedAfterAddingTwoContent.size());
+    }
+    @Test
+    void testThatAllContentsWithSameDateAreReturnedWhenContentsAreSearchedForById(){
+        diaryContentRepoImpl.saveDiaryContent(diaryContent);
+        diaryContentRepoImpl.saveDiaryContent(diaryContent);
+        int noOfContentsWhenISearchByDate = diaryContentRepoImpl.viewDiaryContentByDate("2023-03-22").size();
+        assertEquals(2, noOfContentsWhenISearchByDate);
     }
 }
