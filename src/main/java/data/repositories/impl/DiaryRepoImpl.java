@@ -1,23 +1,32 @@
 package data.repositories.impl;
 
-import data.dto.request.UpdateContentRequest;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import data.models.DiaryContent;
-import data.repositories.DiaryContentRepo;
+import data.repositories.DiaryRepo;
 
+import java.io.File;
+import java.io.IOException;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class DiaryContentRepoImpl implements DiaryContentRepo {
+public class DiaryRepoImpl implements DiaryRepo {
     private final List<DiaryContent>diaryContents = new ArrayList<>();
     @Override
     public DiaryContent saveDiaryContent(DiaryContent diaryContent) {
         int id = diarySize() + 1;
         diaryContent.setId(id);
-        diaryContent.setLocalDateTime(LocalDateTime.now());
         diaryContents.add(diaryContent);
+        ObjectMapper mapper = new ObjectMapper();
+        mapper.registerModule(new JavaTimeModule());
+        try {
+            mapper.writeValue(new File("C:\\Users\\user\\IdeaProjects\\advancediary\\" +
+                    "src\\main\\resources\\DiaryFile.txt"), diaryContents);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         return diaryContent;
     }
 
@@ -60,17 +69,8 @@ public class DiaryContentRepoImpl implements DiaryContentRepo {
     }
 
     @Override
-    public DiaryContent updateDiaryContent(UpdateContentRequest updateContentRequest) {
-        DiaryContent diaryContent = new DiaryContent();
-        for (int i = 0; i < diaryContents.size(); i++) {
-            if (diaryContents.get(i).getId() == updateContentRequest.getId()){
-                diaryContent.setId(diaryContents.get(i).getId());
-                diaryContent.setTitle(updateContentRequest.getTitle());
-                diaryContent.setBody(updateContentRequest.getBody());
-                diaryContents.add(i,diaryContent);
-                break;
-            }
-        }
-        return diaryContent;
+    public String updateDiaryContent(DiaryContent diaryContent) {
+        diaryContents.add(diaryContent.getId() - 1,diaryContent);
+        return "Content updated successfully";
     }
 }

@@ -15,5 +15,6 @@ public class DiaryContent {
     private int id;
     private String title;
     private String body;
+    private String userEmail;
     private LocalDateTime localDateTime;
 }

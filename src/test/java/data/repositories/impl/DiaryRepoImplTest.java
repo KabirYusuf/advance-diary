@@ -1,23 +1,24 @@
 package data.repositories.impl;
-import data.dto.request.UpdateContentRequest;
 import data.models.DiaryContent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class DiaryContentRepoImplTest {
-    private DiaryContentRepoImpl diaryContentRepoImpl;
+class DiaryRepoImplTest {
+    private DiaryRepoImpl diaryContentRepoImpl;
     private DiaryContent diaryContent;
 
     @BeforeEach
     void setUp() {
-        diaryContentRepoImpl = new DiaryContentRepoImpl();
+        diaryContentRepoImpl = new DiaryRepoImpl();
         diaryContent = new DiaryContent();
         diaryContent.setTitle("First content");
         diaryContent.setBody("My first diary content");
+        diaryContent.setLocalDateTime(LocalDateTime.now());
     }
     @Test
     void testThatIfADiaryContentIsSaved_DiaryContentDBSizeIncreasesByOne(){
@@ -69,11 +70,11 @@ class DiaryContentRepoImplTest {
         assertEquals(titleOfSavedContentBeforeUpdate, diaryContentRepoImpl.viewDiaryContentById(1).getTitle());
         String titleUpdate = "updated title";
         String bodyUpdate = "updatedBody";
-        UpdateContentRequest updateContentRequest = new UpdateContentRequest();
-        updateContentRequest.setBody(bodyUpdate);
-        updateContentRequest.setId(1);
-        updateContentRequest.setTitle(titleUpdate);
-        diaryContentRepoImpl.updateDiaryContent(updateContentRequest);
+        DiaryContent updateContent = new DiaryContent();
+        updateContent.setBody(bodyUpdate);
+        updateContent.setId(1);
+        updateContent.setTitle(titleUpdate);
+        diaryContentRepoImpl.updateDiaryContent(updateContent);
         String titleOfSavedContentAfterUpdate = "updated title";
         String bodyOfContentAfterUpdate = "updatedBody";
         assertEquals(titleOfSavedContentAfterUpdate,diaryContentRepoImpl.viewDiaryContentById(1).getTitle() );
