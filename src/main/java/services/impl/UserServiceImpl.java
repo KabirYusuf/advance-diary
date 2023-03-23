@@ -2,14 +2,19 @@ package services.impl;
 
 import data.dto.request.CreateDiaryContentRequest;
 import data.dto.request.CreateUserRequest;
+import data.dto.request.LoginRequest;
 import data.dto.response.CreateDiaryContentResponse;
 import data.dto.response.CreateUserResponse;
+import data.models.DiaryContent;
 import data.models.User;
 import data.repositories.UserRepo;
 import data.repositories.impl.UserRepoImpl;
 import exception.UserException;
+import org.mindrot.jbcrypt.BCrypt;
 import services.DiaryService;
 import services.UserService;
+
+import java.util.List;
 
 public class UserServiceImpl implements UserService {
     private UserRepo userRepo = new UserRepoImpl();
@@ -22,7 +27,7 @@ public class UserServiceImpl implements UserService {
         }
         User user = new User();
         user.setEmail(createUserRequest.getEmail());
-        user.setPassword(createUserRequest.getPassword());
+        user.setPassword(BCrypt.hashpw(createUserRequest.getPassword(), BCrypt.gensalt()));
         userRepo.saveUser(user);
         CreateUserResponse createUserResponse = new CreateUserResponse();
         createUserResponse.setUserEmail(createUserRequest.getEmail());
@@ -32,11 +37,29 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User findUserByEmail(String email) {
-        return null;
+        return userRepo.findUserByEmail(email);
     }
 
     @Override
     public CreateDiaryContentResponse createDiaryContent(CreateDiaryContentRequest createDiaryContentRequest) {
         return diaryService.createDiaryContent(createDiaryContentRequest);
+    }
+
+    @Override
+    public String login(LoginRequest loginRequest) {
+        String response = "";
+        User foundUser = findUserByEmail(loginRequest.getEmailAddress());
+        if (foundUser != null && BCrypt.checkpw(loginRequest.getPassword(),foundUser.getPassword()))response = "successful";
+        else response = "unsuccessful";
+        return response;
+    }
+
+    @Override
+    public List<DiaryContent> viewDairyContents(String email) {
+        return diaryService.
+                viewAllDiaryContents().
+                stream().
+                filter(diaryContent -> diaryContent.getUserEmail().equals(email)).
+                toList();
     }
 }

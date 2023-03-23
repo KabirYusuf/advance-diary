@@ -6,7 +6,9 @@ import data.models.DiaryContent;
 import data.repositories.DiaryRepo;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -21,11 +23,17 @@ public class DiaryRepoImpl implements DiaryRepo {
         diaryContents.add(diaryContent);
         ObjectMapper mapper = new ObjectMapper();
         mapper.registerModule(new JavaTimeModule());
-        try {
-            mapper.writeValue(new File("C:\\Users\\user\\IdeaProjects\\advancediary\\" +
-                    "src\\main\\resources\\DiaryFile.txt"), diaryContents);
+//        try {
+//            mapper.writeValue(new File("C:\\Users\\user\\IdeaProjects\\advancediary\\" +
+//                    "src\\main\\resources\\DiaryFile.txt"), diaryContents);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("C:\\Users\\user\\IdeaProjects\\advancediary" +
+                "\\src\\main\\resources\\DiaryFile.txt"))) {
+            oos.writeObject(diaryContents);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
         return diaryContent;
     }
