@@ -5,17 +5,14 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import data.models.DiaryContent;
 import data.repositories.DiaryRepo;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DiaryRepoImpl implements DiaryRepo {
-    private final List<DiaryContent>diaryContents = new ArrayList<>();
+    private List<DiaryContent>diaryContents = new ArrayList<>();
     @Override
     public DiaryContent saveDiaryContent(DiaryContent diaryContent) {
         int id = diarySize() + 1;
@@ -80,5 +77,18 @@ public class DiaryRepoImpl implements DiaryRepo {
     public String updateDiaryContent(DiaryContent diaryContent) {
         diaryContents.add(diaryContent.getId() - 1,diaryContent);
         return "Content updated successfully";
+    }
+
+    @Override
+    public List<DiaryContent> getAllDiaryContent() {
+        try(
+                ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream("C:\\Users\\user\\IdeaProjects\\advancediary\\src\\main\\resources\\DiaryFile.txt"))
+
+                ){
+            diaryContents = (List<DiaryContent>) objectInputStream.readObject();
+        }catch (IOException | ClassNotFoundException e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }

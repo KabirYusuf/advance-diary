@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public class DiaryServiceImpl implements DiaryService {
-    private final DiaryRepo diaryRepo = new DiaryRepoImpl();
+    private  DiaryRepo diaryRepo = new DiaryRepoImpl();
     @Override
     public CreateDiaryContentResponse createDiaryContent(CreateDiaryContentRequest createDiaryContentRequest) {
         DiaryContent diaryContent = new DiaryContent();

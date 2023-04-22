@@ -13,4 +13,6 @@ public interface DiaryRepo {
     List<DiaryContent> viewDiaryContentByTitle(String title);
     int diarySize();
     String updateDiaryContent(DiaryContent diaryContent);
+
+    List<DiaryContent> getAllDiaryContent();
 }

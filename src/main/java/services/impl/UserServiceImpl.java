@@ -3,6 +3,7 @@ package services.impl;
 import data.dto.request.CreateDiaryContentRequest;
 import data.dto.request.CreateUserRequest;
 import data.dto.request.LoginRequest;
+import data.dto.request.UpdateContentRequest;
 import data.dto.response.CreateDiaryContentResponse;
 import data.dto.response.CreateUserResponse;
 import data.models.DiaryContent;
@@ -14,6 +15,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import services.DiaryService;
 import services.UserService;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserServiceImpl implements UserService {
@@ -62,4 +64,21 @@ public class UserServiceImpl implements UserService {
                 filter(diaryContent -> diaryContent.getUserEmail().equals(email)).
                 toList();
     }
+
+    @Override
+    public String updateContent(UpdateContentRequest updateContentRequest) {
+        return diaryService.updateDiaryContent(updateContentRequest);
+    }
+
+    @Override
+    public List<DiaryContent> findDiaryContentByTitle(String title, String email) {
+        var UsersDiaryContent = viewDairyContents(email);
+        List<DiaryContent> contentsByTitle = new ArrayList<>();
+        for (DiaryContent content: UsersDiaryContent) {
+            if (content.getTitle().equals(title))contentsByTitle.add(content);
+        }
+        return contentsByTitle;
+
+    }
+
 }
